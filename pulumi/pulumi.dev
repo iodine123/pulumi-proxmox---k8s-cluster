@@ -1,0 +1,42 @@
+# Pulumi.<stack-name>.yaml
+# Rename sesuai nama stack kamu, contoh: Pulumi.dev.yaml
+
+config:
+  # ── Proxmox Provider ──────────────────────────────────────────────────────
+  proxmox:endpoint: "https://192.168.1.10:8006"
+  proxmox:username: "root@pam"
+  proxmox:password:
+    secure: "<run: pulumi config set --secret proxmox:password YOUR_PASS>"
+
+  # ── Node & Template ───────────────────────────────────────────────────────
+  proxmox-pulumi:targetNode: "pve"         # nama node Proxmox
+  proxmox-pulumi:templateId: "9000"        # VM ID template sumber
+
+  # ── VM Identity ───────────────────────────────────────────────────────────
+  proxmox-pulumi:vmBaseName: "web"         # nama VM (web, web-1, web-2, ...)
+  proxmox-pulumi:vmBaseId: "200"           # VM ID pertama
+  proxmox-pulumi:vmCount: "1"             # jumlah VM yang dibuat
+
+  # ── CPU & Memory ─────────────────────────────────────────────────────────
+  proxmox-pulumi:cores: "2"
+  proxmox-pulumi:sockets: "1"
+  proxmox-pulumi:memoryMb: "2048"          # dalam MB
+
+  # ── Disk ─────────────────────────────────────────────────────────────────
+  proxmox-pulumi:diskSizeGb: "20"          # dalam GB
+  proxmox-pulumi:diskStorage: "local-lvm"  # nama storage di Proxmox
+
+  # ── Network ──────────────────────────────────────────────────────────────
+  proxmox-pulumi:bridge: "vmbr0"
+  # proxmox-pulumi:vlanTag: "100"          # hapus komen jika pakai VLAN
+
+  # IP statis: "192.168.1.100/24" | DHCP: "dhcp"
+  proxmox-pulumi:ipCidr: "192.168.1.100/24"
+  proxmox-pulumi:gateway: "192.168.1.1"
+  proxmox-pulumi:dns: "8.8.8.8"
+
+  # ── Cloud-Init ───────────────────────────────────────────────────────────
+  proxmox-pulumi:ciUser: "ubuntu"
+  proxmox-pulumi:ciPassword:
+    secure: "<run: pulumi config set --secret proxmox-pulumi:ciPassword YOUR_PASS>"
+  proxmox-pulumi:sshKey: "ssh-ed25519 AAAA... user@host"   # public key

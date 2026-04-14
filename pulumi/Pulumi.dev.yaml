@@ -1,0 +1,6 @@
+config:
+  proxmox:endpoint: https://192.168.1.2:8006/api2/json
+  proxmox:apiTokenId: pulumi-user@pve!pulumi-access
+  proxmox:apiTokenSecret:
+    secure: AAABABVzJfN38iC71TC8ms9FyZJNGotjt2MnFaU79kvHOg6wnG7gsPRf4X+D5znnCQPZv8BwzFrrEpwPDZrcklej0Uo=
+  proxmox:insecure: "true"

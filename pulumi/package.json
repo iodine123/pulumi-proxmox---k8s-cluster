@@ -1,0 +1,16 @@
+{
+  "name": "proxmox-pulumi",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@muhlba91/pulumi-proxmoxve": "^6.0.0",
+    "@pulumi/pulumi": "^3.0.0",
+    "dotenv": "^17.4.2"
+  }
+}
