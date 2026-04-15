@@ -1,4 +1,4 @@
 pulumi/bin/
 pulumi/node_modules/
 pulumi/.env
-packer/variables.pkrvars.hcl
+packer/variables.pkr.hcl
