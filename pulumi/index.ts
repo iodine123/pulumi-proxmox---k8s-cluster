@@ -20,12 +20,12 @@ const cluster_config = {
     master: {
         count: 1,
         cpu: 2,
-        memory: 2048,
+        memory: 4096,
         diskSize: 20,
         ip_start: 50
     },
     worker: {
-        count: 3,
+        count: 2,
         cpu: 2,
         memory: 2048,
         diskSize: 20,
@@ -47,11 +47,17 @@ for (let i = 1; i <= cluster_config.master.count; i++) {
             full: true,
         },
         cpu: {
+            type: "host",
             cores: cluster_config.master.cpu,
         },
         memory: {
             dedicated: cluster_config.master.memory,
         },
+        disks: [{
+            datastoreId: "local-lvm",
+            size: cluster_config.master.diskSize,
+            interface: "scsi0",      
+        }],
         networkDevices: [{
             bridge: "vmbr0",
             model: "virtio",
@@ -85,11 +91,17 @@ for (let i = 1; i <= cluster_config.worker.count; i++) {
             full: true,
         },
         cpu: {
-            cores: cluster_config.worker.cpu,
+            type: "host",
+            cores: cluster_config.master.cpu,
         },
         memory: {
             dedicated: cluster_config.worker.memory,
         },
+        disks: [{
+            datastoreId: "local-lvm",
+            size: cluster_config.worker.diskSize,
+            interface: "scsi0",      
+        }],
         networkDevices: [{
             bridge: "vmbr0",
             model: "virtio",
