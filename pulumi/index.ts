@@ -43,21 +43,7 @@ const cluster_config = {
     }
 }
 
-const user = `#cloud-config
-users:
-  - name: ansible_user
-    groups: sudo
-    shell: /bin/bash
-    sudo: ['ALL=(ALL) NOPASSWD:ALL']
-    ssh_authorized_keys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCaqYWMxJQpyPJ7ud80wI+JI0r+KDMJg+vuGbH7dsu4IdN5bEr/gz/u7hBwiT2hCQq6Rk0jfiJOPPS9KRaQin7N+PD+y+51CwTZAt/sBhLdm2UYu/+PV/bcZOHn53SxVh0NcP1Vs1FuK+VgOOIWPl1kSVT88yy3/5ABAPRLDJBfDaUQoNXhJpJFJcltd0vuw+GAwkutB6dXo8m6SIvqWeHEqPbHdgzO7dSWcnpcSQGE4pqSTpypqS9q+SCPhDeVXojTUBHoHrbA4lPPbweEaJr+ja2+VSYcxP3A6huXJYUt9AmKwfBI6yI6cf7z3XJhq9crdDC2cvL9y4Y8y0xylrc9Kz8xZbLdMJ6wYveTG0D2ZqUewcPEvr9WRPAOLBsI7K3p6W1/s8caejWAZC034xru4/rh5SbLHlfs58bUGyYVqhOzeSXeFe8KVxXmx5t54iwYMBfmHMSXHxOy7o/LZbI64YmqnXwsUTBlKG6emeDe030I2lPYAWRSrzhYLRHo6fIgiW3jZx0yhVzF6oRNzWKVmPJvvxCCglnIMoKiXmvSGkx/kkSrgJ3bsfstE2EDEmid9eZTCNrZ+Efiabt8F+9lSXc6DPpISeTCxP07bOSGrQhz9a6aajlTjk7/qYeHA7MLbRNLgQ6fGjdTvaNyi/9XPupfruzVbxT7hslOF9Ciqw== iodinehanifan@gmail.com
-  - name: admin123
-    groups: sudo
-    shell: /bin/bash
-    sudo: ['ALL=(ALL) NOPASSWD:ALL']
-    ssh_authorized_keys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCaqYWMxJQpyPJ7ud80wI+JI0r+KDMJg+vuGbH7dsu4IdN5bEr/gz/u7hBwiT2hCQq6Rk0jfiJOPPS9KRaQin7N+PD+y+51CwTZAt/sBhLdm2UYu/+PV/bcZOHn53SxVh0NcP1Vs1FuK+VgOOIWPl1kSVT88yy3/5ABAPRLDJBfDaUQoNXhJpJFJcltd0vuw+GAwkutB6dXo8m6SIvqWeHEqPbHdgzO7dSWcnpcSQGE4pqSTpypqS9q+SCPhDeVXojTUBHoHrbA4lPPbweEaJr+ja2+VSYcxP3A6huXJYUt9AmKwfBI6yI6cf7z3XJhq9crdDC2cvL9y4Y8y0xylrc9Kz8xZbLdMJ6wYveTG0D2ZqUewcPEvr9WRPAOLBsI7K3p6W1/s8caejWAZC034xru4/rh5SbLHlfs58bUGyYVqhOzeSXeFe8KVxXmx5t54iwYMBfmHMSXHxOy7o/LZbI64YmqnXwsUTBlKG6emeDe030I2lPYAWRSrzhYLRHo6fIgiW3jZx0yhVzF6oRNzWKVmPJvvxCCglnIMoKiXmvSGkx/kkSrgJ3bsfstE2EDEmid9eZTCNrZ+Efiabt8F+9lSXc6DPpISeTCxP07bOSGrQhz9a6aajlTjk7/qYeHA7MLbRNLgQ6fGjdTvaNyi/9XPupfruzVbxT7hslOF9Ciqw== iodinehanifan@gmail.com
-`;
+
 
 // Create a new Proxmox VE virtual machine for the Kubernetes master node
 for (let i = 1; i <= cluster_config.master.count; i++) {
@@ -90,7 +76,7 @@ for (let i = 1; i <= cluster_config.master.count; i++) {
         // @ts-ignore
         initialization: {
             datastoreId: "local-lvm",
-            userData: user,
+            userDataFileId: user,
             ipConfigs: [{
                 ipv4: {
                     address: `${cluster_config.network.subnet}.${cluster_config.master.ip_start + i}/24`,       
@@ -134,7 +120,7 @@ for (let i = 1; i <= cluster_config.worker.count; i++) {
         // @ts-ignore
         initialization: {
             datastoreId: "local-lvm",
-            userData: user,
+            userDataFileId: user,
             ipConfigs: [{
                 ipv4: {
                     address: `${cluster_config.network.subnet}.${cluster_config.worker.ip_start + i}/24`,
@@ -176,7 +162,10 @@ const ansible =new proxmox.vm.VirtualMachine(`ansible-server`, {
         // @ts-ignore
         initialization: {
             datastoreId: "local-lvm",
-            userData: user,
+            userAccount: {
+                username: "ansible",
+                password: "ansible",
+            },
             ipConfigs: [{
                 ipv4: {
                     address: `${cluster_config.network.subnet}.${cluster_config.ansible.ip}/24`,       
