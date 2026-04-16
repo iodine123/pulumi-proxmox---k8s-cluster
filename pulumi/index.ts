@@ -22,20 +22,20 @@ const cluster_config = {
         cpu: 2,
         memory: 2048,
         diskSize: 20,
-        ip_start: 50
+        ip_start: 5
     },
     worker: {
         count: 2,
         cpu: 2,
         memory: 2048,
         diskSize: 20,
-        ip_start: 60
+        ip_start: 10
     },
     ansible: {
         cpu: 1,
         memory: 1024,   
         diskSize: 5,
-        ip: 70
+        ip: 30
     },
     network: {
         gateway: "192.168.10.1",
