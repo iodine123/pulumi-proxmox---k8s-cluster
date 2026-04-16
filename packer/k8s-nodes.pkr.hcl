@@ -36,7 +36,7 @@ source "proxmox-iso" "k8s_master" {
   http_directory       = "http"
   http_bind_address    = "192.168.198.1" 
   http_port_min        = 8063
-  http_port_max        = 8063
+  http_port_max        = 8070
   boot_command         = [
     "<esc><wait>",
     "install auto=true ",
@@ -48,9 +48,10 @@ source "proxmox-iso" "k8s_master" {
     "interface=auto ",
     "<enter>"
   ]
-  ssh_username   = "admin"
-  ssh_password   = "password123"
-  ssh_timeout    = "20m"
+  ssh_pty                 = true
+  ssh_username            = "admin123"
+  ssh_password            = "password123"
+  ssh_timeout             = "20m"
 }
 
 # --- SOURCE WORKER (ID 9002) ---
@@ -82,7 +83,7 @@ source "proxmox-iso" "k8s_worker" {
   http_directory       = "http"
   http_bind_address    = "192.168.198.1" 
   http_port_min        = 8063
-  http_port_max        = 8063
+  http_port_max        = 8070
   boot_command         = [
     "<esc><wait>",
     "install auto=true ",
@@ -94,9 +95,10 @@ source "proxmox-iso" "k8s_worker" {
     "interface=auto ",
     "<enter>"
   ]
-  ssh_username   = "admin"
-  ssh_password   = "password123"
-  ssh_timeout    = "20m"
+  ssh_pty                 = true
+  ssh_username            = "admin123"
+  ssh_password            = "password123"
+  ssh_timeout             = "20m"
 }
 
 # --- BUILD ---

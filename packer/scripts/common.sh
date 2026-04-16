@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl sudo
+sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl sudo gnupg2 software-properties-common
 
 sudo apt-get install -y docker.io
 sudo systemctl enable --now docker
