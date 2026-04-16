@@ -176,3 +176,5 @@ export const masterNames = masters.map(m => m.name);
 export const masterIPs = masters.map(m => (m as any).initialization.ipConfigs[0].ipv4.address);
 export const workerNames = workers.map(w => (w as any).name);
 export const workerIPs = workers.map(w => (w as any).initialization.ipConfigs[0].ipv4.address);
+export const ansibleName = (ansible as any).name;
+export const ansibleIP = (ansible as any).initialization.ipConfigs[0].ipv4.address;
