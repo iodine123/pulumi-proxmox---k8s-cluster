@@ -20,7 +20,7 @@ const cluster_config = {
     master: {
         count: 1,
         cpu: 2,
-        memory: 4096,
+        memory: 2048,
         diskSize: 20,
         ip_start: 50
     },
