@@ -31,6 +31,12 @@ const cluster_config = {
         diskSize: 20,
         ip_start: 60
     },
+    ansible: {
+        cpu: 1,
+        memory: 1024,   
+        diskSize: 5,
+        ip: 70
+    },
     network: {
         gateway: "192.168.10.1",
         subnet: "192.168.10"
@@ -66,7 +72,7 @@ for (let i = 1; i <= cluster_config.master.count; i++) {
         initialization: {
             datastoreId: "local-lvm",
             userAccount: {
-                username: "iodine",
+                username: "admin123",
                 password: "password123",
             },
             ipConfigs: [{
@@ -110,7 +116,7 @@ for (let i = 1; i <= cluster_config.worker.count; i++) {
         initialization: {
             datastoreId: "local-lvm",
             userAccount: {
-                username: "iodine",
+                username: "admin123",
                 password: "password123",
             },
             ipConfigs: [{
@@ -123,6 +129,48 @@ for (let i = 1; i <= cluster_config.worker.count; i++) {
     }, { provider: proxmoxProvider } as any);
     workers.push(vm);
 }
+
+// Install ansible server
+const ansible =new proxmox.vm.VirtualMachine(`ansible-server`, {
+        nodeName: "pve-lab",      
+        // @ts-ignore  
+        clone: {
+            vmId: 9002, 
+            full: true,
+        },
+        cpu: {
+            type: "host",
+            cores: cluster_config.ansible.cpu,
+        },
+        memory: {
+            dedicated: cluster_config.ansible.memory,
+        },
+        disks: [{
+            datastoreId: "local-lvm",
+            size: cluster_config.ansible.diskSize,
+            interface: "scsi0",      
+        }],
+        networkDevices: [{
+            bridge: "vmbr0",
+            model: "virtio",
+        }],
+        // @ts-ignore
+        initialization: {
+            datastoreId: "local-lvm",
+            userAccount: {
+                username: "admin123",
+                password: "password123",
+            },
+            ipConfigs: [{
+                ipv4: {
+                    address: `${cluster_config.network.subnet}.${cluster_config.ansible.ip}/24`,       
+                    gateway: cluster_config.network.gateway,
+                },
+            }],
+        },
+
+
+    }, { provider: proxmoxProvider } as any);
 
 export const masterNames = masters.map(m => m.name);
 export const masterIPs = masters.map(m => (m as any).initialization.ipConfigs[0].ipv4.address);
