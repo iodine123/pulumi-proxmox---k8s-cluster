@@ -24,12 +24,19 @@ const cluster_config = {
         diskSize: 20,
         ip_start: 5
     },
-    worker: {
-        count: 2,
+    worker_large: {
+        count: 1,
+        cpu: 4,
+        memory: 4096,
+        diskSize: 20,
+        ip_start: 10
+    },
+    worker_small: {
+        count: 1,
         cpu: 2,
         memory: 2048,
         diskSize: 20,
-        ip_start: 10
+        ip_start: 15
     },
     ansible: {
         cpu: 1,
@@ -43,7 +50,7 @@ const cluster_config = {
     }
 }
 
-// Create a new Proxmox VE virtual machine for the Kubernetes master node
+// Create Kubernetes master node
 for (let i = 1; i <= cluster_config.master.count; i++) {
     const vm =new proxmox.vm.VirtualMachine(`k8s-master-${i}`, {
         nodeName: "pve-lab",      
@@ -91,8 +98,9 @@ for (let i = 1; i <= cluster_config.master.count; i++) {
     masters.push(vm);
 }
 
-for (let i = 1; i <= cluster_config.worker.count; i++) {
-    const vm = new proxmox.vm.VirtualMachine(`k8s-worker-${i}`, {
+// install Kubernetes worker node large
+for (let i = 1; i <= cluster_config.worker_large.count; i++) {
+    const vm = new proxmox.vm.VirtualMachine(`k8s-worker_large-${i}`, {
         nodeName: "pve-lab",
         // @ts-ignore
         clone: {
@@ -107,11 +115,11 @@ for (let i = 1; i <= cluster_config.worker.count; i++) {
             cores: cluster_config.master.cpu,
         },
         memory: {
-            dedicated: cluster_config.worker.memory,
+            dedicated: cluster_config.worker_large.memory,
         },
         disks: [{
             datastoreId: "local-lvm",
-            size: cluster_config.worker.diskSize,
+            size: cluster_config.worker_large.diskSize,
             interface: "scsi0",      
         }],
         networkDevices: [{
@@ -127,7 +135,53 @@ for (let i = 1; i <= cluster_config.worker.count; i++) {
             },
             ipConfigs: [{
                 ipv4: {
-                    address: `${cluster_config.network.subnet}.${cluster_config.worker.ip_start + i}/24`,
+                    address: `${cluster_config.network.subnet}.${cluster_config.worker_large.ip_start + i}/24`,
+                    gateway: cluster_config.network.gateway,
+                },
+            }],
+        },
+    }, { provider: proxmoxProvider } as any);
+    workers.push(vm);
+}
+
+// install Kubernetes worker node small
+for (let i = 1; i <= cluster_config.worker_large.count; i++) {
+    const vm = new proxmox.vm.VirtualMachine(`k8s-worker_large-${i}`, {
+        nodeName: "pve-lab",
+        // @ts-ignore
+        clone: {
+            vmId: 9002,
+            full: true,
+        },
+        agent: {
+            enabled: true,
+        },
+        cpu: {
+            type: "host",
+            cores: cluster_config.master.cpu,
+        },
+        memory: {
+            dedicated: cluster_config.worker_large.memory,
+        },
+        disks: [{
+            datastoreId: "local-lvm",
+            size: cluster_config.worker_large.diskSize,
+            interface: "scsi0",      
+        }],
+        networkDevices: [{
+            bridge: "vmbr0",
+            model: "virtio",
+        }],
+        // @ts-ignore
+        initialization: {
+            datastoreId: "local-lvm",
+            userAccount: {
+                username: "admin123",
+                password: "password123",
+            },
+            ipConfigs: [{
+                ipv4: {
+                    address: `${cluster_config.network.subnet}.${cluster_config.worker_small.ip_start + i}/24`,
                     gateway: cluster_config.network.gateway,
                 },
             }],
